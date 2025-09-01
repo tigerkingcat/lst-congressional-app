@@ -2,19 +2,26 @@
 import React, {
     forwardRef,
     useRef,
-    useImperativeHandle,
+    useImperativeHandle, useEffect,useState
 } from 'react';
-import { MapContainer, TileLayer, Marker, Popup, GeoJSON } from 'react-leaflet';
+import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap} from 'react-leaflet';
 import geoData from './assets/tl_2023_06_bg_fc.json';
+import Search from "./Search.jsx";
+import L from 'leaflet';
+import 'leaflet-geometryutil';
 
-const normal    = { color: 'purple', weight: 2, fillOpacity: 0.05 };
-const highlight = { color: 'red',    weight: 2, fillOpacity: 0.4 };
+
+
+
+const normal    = { color: 'purple', weight: 0.5, fillOpacity: 0.02 };
+const highlight = { color: 'red',    weight: 0.5, fillOpacity: 0.4 };
+
 
 const Map = forwardRef(function Map({ idFn }, ref) {
     const selectedLayerRef = useRef(null);
-    const geoJsonLayerRef  = useRef(null);     // lets us touch *all* polygons later
+    const geoJsonLayerRef  = useRef(null);
+    const [picked, setPicked] = useState(null);
 
-    /** ------ Mouse / click handlers --------------------------------------- */
     const onEachFeature = (feature, layer) => {
         layer.setStyle(normal);
 
@@ -46,11 +53,84 @@ const Map = forwardRef(function Map({ idFn }, ref) {
         });
     };
 
-    /** ------ Expose ‘resetSelection’ to the parent ------------------------ */
+    useEffect(() => {
+        if (!picked) return;
+
+        if (!geoJsonLayerRef.current) {
+            const timer = setTimeout(() => {
+                if (geoJsonLayerRef.current && picked) {
+                    const latlng = L.latLng(picked.lat, picked.lng);
+
+                    // Manually find which polygon contains the point
+                    let foundLayer = null;
+                    geoJsonLayerRef.current.eachLayer(layer => {
+                        try {
+                            const bounds = layer.getBounds && layer.getBounds();
+                            if (bounds && bounds.contains && bounds.contains(latlng)) {
+                                foundLayer = layer;
+                                return false; // Break out of eachLayer loop
+                            }
+                        } catch (e) {
+                            // Silently handle bounds errors
+                        }
+                    });
+
+                    if (foundLayer) {
+                        if (selectedLayerRef.current && selectedLayerRef.current !== foundLayer) {
+                            selectedLayerRef.current.setStyle(normal);
+                        }
+
+                        foundLayer.setStyle(highlight);
+                        selectedLayerRef.current = foundLayer;
+
+                        idFn?.(foundLayer.feature.properties.id);
+                    }
+                }
+            }, 500);
+            return () => clearTimeout(timer);
+        }
+
+        const latlng = L.latLng(picked.lat, picked.lng);
+
+        // Manually find which polygon contains the point
+        let foundLayer = null;
+        geoJsonLayerRef.current.eachLayer(layer => {
+            try {
+                const bounds = layer.getBounds && layer.getBounds();
+                if (bounds && bounds.contains && bounds.contains(latlng)) {
+                    foundLayer = layer;
+                    return false; // Break out of eachLayer loop
+                }
+            } catch (e) {
+                // Silently handle bounds errors
+            }
+        });
+
+        if (foundLayer) {
+            if (selectedLayerRef.current && selectedLayerRef.current !== foundLayer) {
+                selectedLayerRef.current.setStyle(normal);
+            }
+
+            foundLayer.setStyle(highlight);
+            selectedLayerRef.current = foundLayer;
+
+            idFn?.(foundLayer.feature.properties.id);
+        }
+    }, [picked]);
+
     useImperativeHandle(ref, () => ({
         resetSelection() {
-            // reset *all* polygons, not just the selected one
-            geoJsonLayerRef.current?.eachLayer(layer => layer.setStyle(normal));
+
+            if (selectedLayerRef.current) {
+                selectedLayerRef.current.setStyle(normal);
+            }
+
+            if (geoJsonLayerRef.current) {
+                geoJsonLayerRef.current.eachLayer(layer => {
+                    layer.setStyle(normal);
+                });
+            }
+            
             selectedLayerRef.current = null;
         },
     }));
@@ -67,10 +147,18 @@ const Map = forwardRef(function Map({ idFn }, ref) {
                 <Popup>Los Angeles</Popup>
             </Marker>
 
+            <Search keepMarker={true} onSelect={({ lat, lng, label, bounds }) => {
+                setPicked({ lat, lng, label });
+            }}/>
+
             <GeoJSON
                 data={geoData}
                 onEachFeature={onEachFeature}
-                ref={geoJsonLayerRef}
+                ref={(layer) => {
+                    if (layer) {
+                        geoJsonLayerRef.current = layer;
+                    }
+                }}
             />
         </MapContainer>
     );

@@ -87,6 +87,13 @@ header{
   font-size:1.1rem;
   font-weight:600;
 }
+.positive {
+  color: #77dd77;
+}
+
+.negative {
+  color: #ff6b6b;
+}
 
 /* --- Scrollable slider list --- */
 .slider-section{

@@ -65,7 +65,9 @@ function App() {
     }, [features]);
 
     useEffect(() => {
+        console.log('Selected polygon ID:', id);
         if (id == null) return;
+        setShowSlider(true);
         fetch("http://localhost:8000/api/receive-data", {
             method: "POST",
             headers: {
@@ -131,8 +133,11 @@ function App() {
                     <div className="sidebar">
                         <Delete handleDelete={handleDelete} />
                         <div className="lst-values">
-                            <h2>LST: {lst}</h2>
-                            <h2>Predicted LST: {lstPred}</h2>
+                            <h2>LST: {parseFloat((lst).toFixed(3))}</h2>
+                        {lstPred-lst >= 0 ?
+                            <h2 className={"positive"}>Predicted LST: +{parseFloat((lstPred-lst).toFixed(3))}</h2>
+                            :
+                            <h2 className={"negative"}>Predicted LST: {parseFloat((lstPred-lst).toFixed(3))}</h2>}
                         </div>
                         <div className="slider-section">
                             <Slider name="Impervious Surface Area" min={0} max={100} step='0.01' featureFn={setFeatures}
