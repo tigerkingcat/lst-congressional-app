@@ -5,7 +5,7 @@ import React, {
     useImperativeHandle, useEffect,useState
 } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, GeoJSON, useMap} from 'react-leaflet';
-import geoData from './assets/tl_2023_06_bg_fc.json';
+import geoData from '../assets/tl_2023_06_bg_fc.json';
 import Search from "./Search.jsx";
 import L from 'leaflet';
 import 'leaflet-geometryutil';
