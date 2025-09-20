@@ -51,7 +51,7 @@ const initialHviData = {
     Total_Population: 2500,
     Median_Age: 50,
     Per_Capita_Income: 100000,
-    Families_Below_Poverty: 50000,
+    Families_Below_Poverty: 250,
     year_centered: 7.5,
 };
 
@@ -60,6 +60,7 @@ function App() {
     const [lst, setLst] = useState(0);
     const [lstPred, setLstPred] = useState(0);
     const [index, setIndex] = useState(0);
+    const [indexPred, setIndexPred] = useState(0);
     const [level, setLevel] = useState(0);
     const [showSlider, setShowSlider] = useState(false);
     const [features, setFeatures] = useState(initialFeatures);
@@ -134,7 +135,8 @@ function App() {
         })
             .then((res) => res.json())
             .then((data) => {
-                setIndex(data.index)
+                setIndexPred(data.HVI);
+                setLevel(data.level);
             })
             .catch(console.error);
     }, [hviData]);
@@ -174,7 +176,6 @@ function App() {
             .then((data) => {
                 setLst(data.lst_celsius);
                 setIndex(data.HVI_score);
-                setLevel(data.HVI_level);
 
                 setFeatures({
                     impervious: data.impervious,
@@ -233,17 +234,16 @@ function App() {
     return (
         <>
             <Header />
+            <div className="instructions">
+                <p>Click to Start</p>
+                <p>HVI (Heat Vulnerability Index) Level info:</p>
 
-            <p>Click to Start</p>
-            <p>HVI (Heat Vulnerability Index) Level info:</p>
-
-            <p>0 = Normal vulnerability</p>
-            <p>1 = Elevated vulnerability</p>
-            <p>2 = Moderate vulnerability</p>
-            <p>3 = High vulnerability</p>
-            <p>4 = Extreme vulnerability</p>
-
-
+                <p>0 = Normal vulnerability</p>
+                <p>1 = Elevated vulnerability</p>
+                <p>2 = Moderate vulnerability</p>
+                <p>3 = High vulnerability</p>
+                <p>4 = Extreme vulnerability</p>
+            </div>
 
             <div className={`message ${msg.color}`}>
                 <span>{msg.text}</span>
@@ -260,7 +260,8 @@ function App() {
 
                         {id_list.includes(id) ? (
                             <>
-                                <h2> Adjustable HVI: {index}</h2>
+                                <h2> HVI: {index}</h2>
+                                <h2> Predicted HVI: {parseFloat(indexPred.toFixed(2))}</h2>
                                 <h2> HVI Level: {level}</h2>
 
                                 <div className="lst-values">
@@ -304,69 +305,69 @@ function App() {
                                         featureKey="NDWI"
                                         feature={features}
                                     />
-                                    <Slider
-                                        name="Elevation"
-                                        min={0}
-                                        max={10000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="elev"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Arid (Cold)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Arid_Cold"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Arid (Hot)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Arid_Hot"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Mediterranean)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Mediterranean"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Semi-Arid (Cold)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Semi_Arid_Cold"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is it an Urban Area 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="urban_rural_classification_U"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is it a rural area? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="urban_rural_classification_nan"
-                                        feature={features}
-                                    />
+                                    {/*<Slider*/}
+                                    {/*    name="Elevation"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={10000}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="elev"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is the climate Arid (Cold)? 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="climate_category_Arid_Cold"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is the climate Arid (Hot)? 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="climate_category_Arid_Hot"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is the climate Mediterranean)? 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="climate_category_Mediterranean"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is the climate Semi-Arid (Cold)? 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="climate_category_Semi_Arid_Cold"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is it an Urban Area 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="urban_rural_classification_U"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
+                                    {/*<Slider*/}
+                                    {/*    name="Is it a rural area? 0 = no, 1 = yes"*/}
+                                    {/*    min={0}*/}
+                                    {/*    max={1}*/}
+                                    {/*    step="1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="urban_rural_classification_nan"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
                                     <Slider
                                         name="Median Household Income"
                                         min={0}
@@ -379,7 +380,7 @@ function App() {
                                     <Slider
                                         name="Number with High School Diploma"
                                         min={0}
-                                        max={10000}
+                                        max={1000}
                                         step="1"
                                         featureFn={setFeatures}
                                         featureKey="High_School_Diploma_25plus"
@@ -451,21 +452,21 @@ function App() {
                                     <Slider
                                         name="Families Below Poverty"
                                         min={0}
-                                        max={100000}
+                                        max={500}
                                         step="1"
                                         featureFn={setFeatures}
                                         featureKey="Families_Below_Poverty"
                                         feature={features}
                                     />
-                                    <Slider
-                                        name="Year (centered)"
-                                        min={-15}
-                                        max={15}
-                                        step="0.1"
-                                        featureFn={setFeatures}
-                                        featureKey="year_centered"
-                                        feature={features}
-                                    />
+                                    {/*<Slider*/}
+                                    {/*    name="Year (centered)"*/}
+                                    {/*    min={-15}*/}
+                                    {/*    max={15}*/}
+                                    {/*    step="0.1"*/}
+                                    {/*    featureFn={setFeatures}*/}
+                                    {/*    featureKey="year_centered"*/}
+                                    {/*    feature={features}*/}
+                                    {/*/>*/}
                                 </div>
                             </>
                         ) : (
