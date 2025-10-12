@@ -13,8 +13,8 @@ import 'leaflet-geometryutil';
 
 
 
-const normal    = { color: 'purple', weight: 0.5, fillOpacity: 0.02 };
-const highlight = { color: 'red',    weight: 0.5, fillOpacity: 0.4 };
+const normal    = { color: 'grey', weight: 0, fillOpacity: 0 };
+const highlight = { color: 'blue',    weight: 0, fillOpacity: 0.4 };
 
 
 const Map = forwardRef(function Map({ idFn }, ref) {
@@ -142,10 +142,6 @@ const Map = forwardRef(function Map({ idFn }, ref) {
                 attribution="© OpenStreetMap contributors"
                 url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
             />
-
-            <Marker position={[34.0522, -118.2437]}>
-                <Popup>Los Angeles</Popup>
-            </Marker>
 
             <Search keepMarker={true} onSelect={({ lat, lng, label, bounds }) => {
                 setPicked({ lat, lng, label });

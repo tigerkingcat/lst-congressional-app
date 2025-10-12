@@ -60,11 +60,13 @@ function App() {
     const [lst, setLst] = useState(0);
     const [lstPred, setLstPred] = useState(0);
     const [index, setIndex] = useState(0);
+    const [indexPred,  setIndexPred] = useState(0);
     const [level, setLevel] = useState(0);
     const [showSlider, setShowSlider] = useState(false);
     const [features, setFeatures] = useState(initialFeatures);
     const [hviData, setHviData] = useState(initialHviData);
     const [id, setId] = useState(null);
+    const [activeTab, setActiveTab] = useState('environmental');
     const mapRef = useRef(null);
 
     const id_list = [
@@ -117,6 +119,44 @@ function App() {
         setShowSlider(false);
     };
 
+    const getHviColor = (level) => {
+        const colors = {
+            0: '#0080ff', // blue
+            1: '#40c9ff', // light blue
+            2: '#ffa940', // orange
+            3: '#ff7875', // light red
+            4: '#ff4d4f'  // red
+        };
+        return colors[level] || '#666';
+    };
+
+    const environmentalSliders = [
+        { name: "Impervious Surface Area", key: "impervious", min: 0, max: 100, step: "0.01" },
+        { name: "Proportional Vegetation", key: "Pv", min: -1, max: 1, step: "0.01" },
+        { name: "Water Index", key: "NDWI", min: -1, max: 1, step: "0.01" },
+        { name: "Elevation", key: "elev", min: 0, max: 10000, step: "1" },
+        { name: "Arid (Cold) Climate", key: "climate_category_Arid_Cold", min: 0, max: 1, step: "1" },
+        { name: "Arid (Hot) Climate", key: "climate_category_Arid_Hot", min: 0, max: 1, step: "1" },
+        { name: "Mediterranean Climate", key: "climate_category_Mediterranean", min: 0, max: 1, step: "1" },
+        { name: "Semi-Arid (Cold) Climate", key: "climate_category_Semi_Arid_Cold", min: 0, max: 1, step: "1" },
+        { name: "Urban Area", key: "urban_rural_classification_U", min: 0, max: 1, step: "1" },
+        { name: "Rural Area", key: "urban_rural_classification_nan", min: 0, max: 1, step: "1" },
+        { name: "Year (centered)", key: "year_centered", min: -15, max: 15, step: "0.1" }
+    ];
+
+    const socioeconomicSliders = [
+        { name: "Median Household Income", key: "Median_Household_Income", min: 0, max: 200000, step: "1" },
+        { name: "High School Graduates (25+)", key: "High_School_Diploma_25plus", min: 0, max: 10000, step: "1" },
+        { name: "Unemployed Persons", key: "Unemployment", min: 0, max: 5000, step: "1" },
+        { name: "Median Housing Value", key: "Median_Housing_Value", min: 0, max: 2000000, step: "1" },
+        { name: "Median Gross Rent", key: "Median_Gross_Rent", min: 0, max: 4000, step: "0.1" },
+        { name: "Renter Occupied Housing Units", key: "Renter_Occupied_Housing_Units", min: 0, max: 1000, step: "1" },
+        { name: "Total Population", key: "Total_Population", min: 0, max: 5000, step: "1" },
+        { name: "Median Age", key: "Median_Age", min: 0, max: 100, step: "0.1" },
+        { name: "Per Capita Income", key: "Per_Capita_Income", min: 0, max: 200000, step: "0.1" },
+        { name: "Families Below Poverty", key: "Families_Below_Poverty", min: 0, max: 100000, step: "1" }
+    ];
+
     useEffect(() => {
         fetch("http://localhost:8000/api/hello")
             .then((res) => {
@@ -134,7 +174,8 @@ function App() {
         })
             .then((res) => res.json())
             .then((data) => {
-                setIndex(data.index)
+                setIndexPred(data.HVI);
+                setLevel(data.level);
             })
             .catch(console.error);
     }, [hviData]);
@@ -233,249 +274,145 @@ function App() {
     return (
         <>
             <Header />
-
-            <p>Click to Start</p>
-            <p>HVI (Heat Vulnerability Index) Level info:</p>
-
-            <p>0 = Normal vulnerability</p>
-            <p>1 = Elevated vulnerability</p>
-            <p>2 = Moderate vulnerability</p>
-            <p>3 = High vulnerability</p>
-            <p>4 = Extreme vulnerability</p>
-
-
-
+            
             <div className={`message ${msg.color}`}>
                 <span>{msg.text}</span>
             </div>
 
-            <div className="content">
+            <div className="instructions">
+                <p><strong>Instructions:</strong> Click on any area of the map to start analyzing heat vulnerability data for that location.</p>
+            </div>
+
+            <div className="main-content">
                 <div className="map-container" onClick={() => !showSlider && setShowSlider(true)}>
                     <Map idFn={setId} ref={mapRef} />
                 </div>
 
                 {showSlider && (
-                    <div className="sidebar">
-                        <Delete handleDelete={handleDelete} />
+                    <div className="control-panel">
+                        <div className="control-header">
+                            <Delete handleDelete={handleDelete} />
+                            
+                            {id_list.includes(id) ? (
+                                <div className="hvi-display">
+                                    <div className="hvi-score">
+                                        <span className="label">HVI Score:</span>
+                                        <span className="value">{parseFloat((index || 0).toFixed(3))}</span>
+                                    </div>
+                                    <div className="hvi-score">
+                                        <span className="label">HVI Score (pred):</span>
+                                        <span className="value">{parseFloat((indexPred || 0).toFixed(3))}</span>
+                                    </div>
+                                    <div className="hvi-level" style={{ backgroundColor: getHviColor(level) }}>
+                                        <span className="label">HVI Level:</span>
+                                        <span className="value">{level}</span>
+                                    </div>
+                                    <div className="lst-display">
+                                        <div className="lst-current">
+                                            <span className="label">Current LST:</span>
+                                            <span className="value">{parseFloat((lst || 0).toFixed(2))}°C</span>
+                                        </div>
+                                        <div className={`lst-predicted ${(lstPred || 0) - (lst || 0) >= 0 ? 'negative' : 'positive'}`}>
+                                            <span className="label">Predicted Change:</span>
+                                            <span className="value">
+                                                {(lstPred || 0) - (lst || 0) >= 0 ? '+' : ''}{parseFloat(((lstPred || 0) - (lst || 0)).toFixed(2))}°C
+                                            </span>
+                                        </div>
+                                    </div>
+                                </div>
+                            ) : (
+                                <div className="no-data">
+                                    <p>Unfortunately, we do not have data for this block group at this time. Please check back later.</p>
+                                </div>
+                            )}
+                        </div>
 
-                        {id_list.includes(id) ? (
-                            <>
-                                <h2> Adjustable HVI: {index}</h2>
-                                <h2> HVI Level: {level}</h2>
+                        {id_list.includes(id) && (
+                            <div className="tabs-container">
+                                <div className="tabs">
+                                    <button 
+                                        className={`tab ${activeTab === 'environmental' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('environmental')}
+                                    >
+                                        Environmental Factors
+                                    </button>
+                                    <button 
+                                        className={`tab ${activeTab === 'socioeconomic' ? 'active' : ''}`}
+                                        onClick={() => setActiveTab('socioeconomic')}
+                                    >
+                                        Socioeconomic Factors
+                                    </button>
+                                </div>
 
-                                <div className="lst-values">
-                                    <h2>LST: {parseFloat(lst.toFixed(3))}</h2>
-                                    {lstPred - lst >= 0 ? (
-                                        <h2 className={"negative"}>
-                                            Predicted LST: +{parseFloat((lstPred - lst).toFixed(3))}
-                                        </h2>
-                                    ) : (
-                                        <h2 className={"positive"}>
-                                            Predicted LST: {parseFloat((lstPred - lst).toFixed(3))}
-                                        </h2>
+                                <div className="tab-content">
+                                    {activeTab === 'environmental' && (
+                                        <div className="slider-grid">
+                                            {environmentalSliders.map(slider => (
+                                                <Slider
+                                                    key={slider.key}
+                                                    name={slider.name}
+                                                    min={slider.min}
+                                                    max={slider.max}
+                                                    step={slider.step}
+                                                    featureFn={setFeatures}
+                                                    featureKey={slider.key}
+                                                    feature={features}
+                                                />
+                                            ))}
+                                        </div>
+                                    )}
+                                    {activeTab === 'socioeconomic' && (
+                                        <div className="slider-grid">
+                                            {socioeconomicSliders.map(slider => (
+                                                <Slider
+                                                    key={slider.key}
+                                                    name={slider.name}
+                                                    min={slider.min}
+                                                    max={slider.max}
+                                                    step={slider.step}
+                                                    featureFn={setFeatures}
+                                                    featureKey={slider.key}
+                                                    feature={features}
+                                                />
+                                            ))}
+                                        </div>
                                     )}
                                 </div>
-
-                                <div className="slider-section">
-                                    <Slider
-                                        name="Impervious Surface Area"
-                                        min={0}
-                                        max={100}
-                                        step="0.01"
-                                        featureFn={setFeatures}
-                                        featureKey="impervious"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Proportional Vegetation"
-                                        min={-1}
-                                        max={1}
-                                        step="0.01"
-                                        featureFn={setFeatures}
-                                        featureKey="Pv"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Water Index"
-                                        min={-1}
-                                        max={1}
-                                        step="0.01"
-                                        featureFn={setFeatures}
-                                        featureKey="NDWI"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Elevation"
-                                        min={0}
-                                        max={10000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="elev"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Arid (Cold)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Arid_Cold"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Arid (Hot)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Arid_Hot"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Mediterranean)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Mediterranean"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is the climate Semi-Arid (Cold)? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="climate_category_Semi_Arid_Cold"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is it an Urban Area 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="urban_rural_classification_U"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Is it a rural area? 0 = no, 1 = yes"
-                                        min={0}
-                                        max={1}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="urban_rural_classification_nan"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Median Household Income"
-                                        min={0}
-                                        max={200000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Median_Household_Income"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Number with High School Diploma"
-                                        min={0}
-                                        max={10000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="High_School_Diploma_25plus"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Unemployed Persons"
-                                        min={0}
-                                        max={5000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Unemployment"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Median Housing Value"
-                                        min={0}
-                                        max={2000000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Median_Housing_Value"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Median Gross Rent"
-                                        min={0}
-                                        max={4000}
-                                        step="0.1"
-                                        featureFn={setFeatures}
-                                        featureKey="Median_Gross_Rent"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Renter Occupied Housing Units"
-                                        min={0}
-                                        max={1000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Renter_Occupied_Housing_Units"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Total Population"
-                                        min={0}
-                                        max={5000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Total_Population"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Median Age"
-                                        min={0}
-                                        max={100}
-                                        step="0.1"
-                                        featureFn={setFeatures}
-                                        featureKey="Median_Age"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Per Capita Income"
-                                        min={0}
-                                        max={200000}
-                                        step="0.1"
-                                        featureFn={setFeatures}
-                                        featureKey="Per_Capita_Income"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Families Below Poverty"
-                                        min={0}
-                                        max={100000}
-                                        step="1"
-                                        featureFn={setFeatures}
-                                        featureKey="Families_Below_Poverty"
-                                        feature={features}
-                                    />
-                                    <Slider
-                                        name="Year (centered)"
-                                        min={-15}
-                                        max={15}
-                                        step="0.1"
-                                        featureFn={setFeatures}
-                                        featureKey="year_centered"
-                                        feature={features}
-                                    />
-                                </div>
-                            </>
-                        ) : (
-                            <p>
-                                Unfortunately, we do not have data for this block group at this time.
-                                Please check back later.
-                            </p>
+                            </div>
                         )}
                     </div>
                 )}
+
+                <div className="hvi-explanation">
+                    <h3>Heat Vulnerability Index (HVI) Levels</h3>
+                    <div className="hvi-levels">
+                        <div className="hvi-level-item" style={{ backgroundColor: '#0080ff' }}>
+                            <span className="level-number">0</span>
+                            <span className="level-text">Normal Vulnerability</span>
+                        </div>
+                        <div className="hvi-level-item" style={{ backgroundColor: '#40c9ff' }}>
+                            <span className="level-number">1</span>
+                            <span className="level-text">Elevated Vulnerability</span>
+                        </div>
+                        <div className="hvi-level-item" style={{ backgroundColor: '#ffa940' }}>
+                            <span className="level-number">2</span>
+                            <span className="level-text">Moderate Vulnerability</span>
+                        </div>
+                        <div className="hvi-level-item" style={{ backgroundColor: '#ff7875' }}>
+                            <span className="level-number">3</span>
+                            <span className="level-text">High Vulnerability</span>
+                        </div>
+                        <div className="hvi-level-item" style={{ backgroundColor: '#ff4d4f' }}>
+                            <span className="level-number">4</span>
+                            <span className="level-text">Extreme Vulnerability</span>
+                        </div>
+                    </div>
+                    <p className="hvi-description">
+                        The Heat Vulnerability Index combines environmental and socioeconomic factors to assess 
+                        how vulnerable different areas are to extreme heat events. Higher levels indicate greater 
+                        risk and need for heat mitigation strategies.
+                    </p>
+                </div>
             </div>
 
             <Footer />

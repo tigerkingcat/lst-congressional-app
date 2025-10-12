@@ -1,202 +1,576 @@
 /* ---------- Theme tokens ---------- */
-:root{
-  --clr-bg:#f0f4f9;
-  --clr-surface:#ffffff;
-  --clr-primary:#0080ff;
-  --clr-primary-dark:#0061cc;
-  --clr-shadow:rgba(0,0,0,.1);
-  --radius:12px;
-  --gap:1.5rem;
-  font-size:16px;
+:root {
+  --clr-bg: #f8fafc;
+  --clr-surface: #ffffff;
+  --clr-primary: #0080ff;
+  --clr-primary-dark: #0061cc;
+  --clr-secondary: #64748b;
+  --clr-success: #10b981;
+  --clr-warning: #ffa940;
+  --clr-danger: #ff4d4f;
+  --clr-danger-dark: #d9363e;
+  --clr-shadow: rgba(0, 0, 0, 0.1);
+  --clr-shadow-lg: rgba(0, 0, 0, 0.15);
+  --clr-border: #e2e8f0;
+  --clr-text: #1e293b;
+  --clr-text-muted: #64748b;
+  --radius: 12px;
+  --radius-sm: 6px;
+  --gap: 1.5rem;
+  font-size: 16px;
 }
 
 /* ---------- Reset / base ---------- */
-*{box-sizing:border-box;margin:0;padding:0}
-body{
-  font-family:Inter,-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,sans-serif;
-  background:var(--clr-bg);color:#222;margin:0;height:100%;
+* {
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
 }
-html,body,#root{min-height:100%;display:flex;flex-direction:column}
+
+body {
+  font-family: Inter, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  background: var(--clr-bg);
+  color: var(--clr-text);
+  margin: 0;
+  height: 100%;
+  line-height: 1.6;
+}
+
+html, body, #root {
+  min-height: 100%;
+  display: flex;
+  flex-direction: column;
+}
 
 /* ---------- Header ---------- */
-header{
-  width:100%;
-  background:var(--clr-primary);
-  color:#fff;
-  text-align:center;
-  padding:.9rem 0;
-  font-size:1.5rem;
-  font-weight:600;
-  box-shadow:0 2px 6px var(--clr-shadow);
+header {
+  width: 100%;
+  background: linear-gradient(135deg, var(--clr-primary), var(--clr-primary-dark));
+  color: #fff;
+  text-align: center;
+  padding: 1.2rem 0;
+  font-size: 1.75rem;
+  font-weight: 700;
+  box-shadow: 0 4px 12px var(--clr-shadow);
+  position: relative;
+  z-index: 10;
 }
 
 /* ---------- Connection banner ---------- */
-.message{
-  margin:1rem auto;
-  padding:.5rem 1.25rem;
-  border-radius:9999px;
-  font-size:1.1rem;
-  font-weight:600;
-  width:max-content;
-  box-shadow:0 2px 6px var(--clr-shadow);
-}
-.message.neutral{background:#dfe4ea;color:#555}
-.message.good   {background:#d4f6d4;color:#0d8b0d}
-.message.bad    {background:#ffd6d6;color:#b60000}
-
-/* ---------- Main area (map + sidebar) ---------- */
-.content{
-  flex:1;
-  display:flex;
-  gap:1.5rem;
-  padding:1.5rem;
+.message {
+  margin: 1rem auto;
+  padding: 0.75rem 1.5rem;
+  border-radius: 50px;
+  font-size: 1rem;
+  font-weight: 600;
+  width: max-content;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  border: 1px solid transparent;
 }
 
-/* Map ≈ 65 % width */
-.map-container{
-  flex:2;
-  min-width:300px;
-  height:75vh;
-  border-radius:var(--radius);
-  overflow:hidden;
-  box-shadow:0 4px 12px var(--clr-shadow);
-}
-.leaflet-container{width:100%!important;height:100%!important}
-
-/* Sidebar ≈ 35 % width, non-scrolling shell */
-.sidebar{
-  flex:1;
-  display:flex;
-  flex-direction:column;
-  gap:1rem;
-  height:75vh;
-  background:var(--clr-surface);
-  border-radius:var(--radius);
-  padding:1.25rem 1rem;
-  box-shadow:0 4px 12px var(--clr-shadow);
+.message.neutral {
+  background: #f1f5f9;
+  color: var(--clr-secondary);
+  border-color: var(--clr-border);
 }
 
-/* --- Fixed LST header inside sidebar --- */
-.lst-values{
-  text-align:center;
-  padding:.75rem 0;
-  border-bottom:1px solid #e2e6ec;
-}
-.lst-values h2{
-  margin:.25rem 0;
-  font-size:1.1rem;
-  font-weight:600;
-}
-.positive {
-  color: #77dd77;
+.message.good {
+  background: #dcfce7;
+  color: #166534;
+  border-color: #bbf7d0;
 }
 
-.negative {
-  color: #ff6b6b;
+.message.bad {
+  background: #fef2f2;
+  color: #dc2626;
+  border-color: #fecaca;
 }
 
-/* --- Scrollable slider list --- */
-.slider-section{
-  flex:1;                     /* fill remaining sidebar height */
-  overflow-y:auto;            /* only this area scrolls        */
-  display:flex;
-  flex-direction:column;
-  gap:1.2rem;
+/* ---------- Instructions ---------- */
+.instructions {
+  background: var(--clr-surface);
+  margin: 1rem auto;
+  padding: 1rem 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  border: 1px solid var(--clr-border);
+  max-width: 800px;
+  text-align: center;
 }
 
-/* -------- Sliders -------- */
-.slidecontainer{
-  display:flex;
-  flex-direction:column;
-  gap:.4rem;
-  text-align:left;
-}
-.slidecontainer label{font-size:.9rem;font-weight:600;line-height:1.25}
-
-.slider{
-  appearance:none;width:100%;height:6px;border-radius:3px;
-  background:#d7dbe3;outline:none;cursor:pointer;
-}
-.slider:hover{background:#c5ccda}
-.slider::-webkit-slider-thumb{
-  appearance:none;width:16px;height:16px;border-radius:50%;
-  background:var(--clr-primary);border:none;transition:.2s;
-}
-.slider::-webkit-slider-thumb:hover{background:var(--clr-primary-dark)}
-.slider::-moz-range-thumb{
-  width:16px;height:16px;border-radius:50%;
-  background:var(--clr-primary);border:none;
+.instructions p {
+  margin: 0;
+  color: var(--clr-text-muted);
+  font-size: 1.1rem;
 }
 
-/* numeric input under each slider */
-.input-container{
-  display:flex;align-items:center;font-size:.8rem;
-  gap:1rem;          /* was 0.5rem */
-  margin-top:.35rem; /* pushes the box a bit farther down */
-}
-.input-container input[type=number]{
-  width:90px;padding:4px 6px;
-  border:1px solid #cfd6e0;border-radius:4px;
+.instructions strong {
+  color: var(--clr-text);
 }
 
-/* ===== Danger button (Delete) ===== */
-
-/* 1 Add two theme tokens for danger colours --------------------------------*/
-:root{
-  --clr-danger:       #ff4d4f;   /* bright red */
-  --clr-danger-dark:  #d9363e;   /* hover / active */
+/* ---------- Main content area ---------- */
+.main-content {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: var(--gap);
+  padding: 0 1.5rem 1.5rem;
+  max-width: 1400px;
+  margin: 0 auto;
+  width: 100%;
 }
 
-/* 2 Delete-button wrapper (optional centring) ------------------------------*/
-.delete-button{
-  text-align:center;          /* centres the button in its cell/column   */
-  margin-top:1rem;            /* breathing room above                     */
+/* ---------- Map container ---------- */
+.map-container {
+  width: 100%;
+  height: 60vh;
+  min-height: 400px;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 8px 24px var(--clr-shadow-lg);
+  border: 1px solid var(--clr-border);
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
-/* 3 Actual button styling --------------------------------------------------*/
-.delete-button button{
-  background:var(--clr-danger);
-  color:#fff;
-  border:none;
-  padding:.65rem 1.5rem;
-  font-size:1rem;
-  font-weight:600;
-  border-radius:var(--radius);   /* inherits 12 px from :root              */
-  cursor:pointer;
-  box-shadow:0 2px 6px var(--clr-shadow);
-  transition:background .2s ease, transform .1s ease, box-shadow .2s ease;
+.map-container:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--clr-shadow-lg);
 }
 
-.delete-button button:hover{
-  background:var(--clr-danger-dark);
-  transform:translateY(-2px);          /* subtle lift on hover              */
-  box-shadow:0 4px 10px var(--clr-shadow);
+.leaflet-container {
+  width: 100% !important;
+  height: 100% !important;
 }
 
-.delete-button button:active{
-  background:var(--clr-danger-dark);
-  transform:translateY(0);
-  box-shadow:0 2px 6px var(--clr-shadow);
+/* ---------- Control panel ---------- */
+.control-panel {
+  background: var(--clr-surface);
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px var(--clr-shadow-lg);
+  border: 1px solid var(--clr-border);
+  overflow: hidden;
 }
 
-.delete-button button:focus-visible{
-  outline:3px solid rgba(255, 77, 79, .4);   /* accessible focus ring       */
-  outline-offset:2px;
+.control-header {
+  padding: 1.5rem;
+  border-bottom: 1px solid var(--clr-border);
+  background: linear-gradient(135deg, #fafbfc, #f8fafc);
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
 }
 
-/* ---------- Responsive (≤ 900 px) ---------- */
-@media(max-width:900px){
-  .content{flex-direction:column}
-  .map-container,.sidebar{width:100%;height:55vh}
-  .sidebar{height:auto}
+/* ---------- HVI Display ---------- */
+.hvi-display {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  flex: 1;
+}
+
+.hvi-score, .hvi-level {
+  background: var(--clr-surface);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  text-align: center;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+}
+
+.hvi-level {
+  color: white;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+.hvi-score .label, .hvi-level .label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  opacity: 0.8;
+}
+
+.hvi-score .value, .hvi-level .value {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+}
+
+.lst-display {
+  grid-column: 1 / -1;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.lst-current, .lst-predicted {
+  background: var(--clr-surface);
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  text-align: center;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+}
+
+.lst-predicted.positive {
+  background: #dcfce7;
+  border-color: #bbf7d0;
+}
+
+.lst-predicted.negative {
+  background: #fef2f2;
+  border-color: #fecaca;
+}
+
+.lst-current .label, .lst-predicted .label {
+  display: block;
+  font-size: 0.875rem;
+  font-weight: 500;
+  margin-bottom: 0.25rem;
+  color: var(--clr-text-muted);
+}
+
+.lst-current .value, .lst-predicted .value {
+  display: block;
+  font-size: 1.25rem;
+  font-weight: 700;
+}
+
+.lst-predicted.positive .value {
+  color: #166534;
+}
+
+.lst-predicted.negative .value {
+  color: #dc2626;
+}
+
+.no-data {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: var(--clr-text-muted);
+}
+
+/* ---------- Tabs ---------- */
+.tabs-container {
+  background: var(--clr-surface);
+}
+
+.tabs {
+  display: flex;
+  border-bottom: 1px solid var(--clr-border);
+  background: #fafbfc;
+}
+
+.tab {
+  flex: 1;
+  padding: 1rem 1.5rem;
+  background: transparent;
+  border: none;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--clr-text-muted);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  border-bottom: 3px solid transparent;
+}
+
+.tab:hover {
+  background: rgba(0, 128, 255, 0.05);
+  color: var(--clr-primary);
+}
+
+.tab.active {
+  color: var(--clr-primary);
+  border-bottom-color: var(--clr-primary);
+  background: rgba(0, 128, 255, 0.05);
+}
+
+.tab-content {
+  padding: 2rem;
+}
+
+/* ---------- Slider grid ---------- */
+.slider-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 2rem;
+}
+
+/* ---------- Individual sliders ---------- */
+.slidecontainer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+  background: var(--clr-surface);
+  padding: 1.25rem;
+  border-radius: var(--radius-sm);
+  border: 1px solid var(--clr-border);
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.slidecontainer:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--clr-shadow-lg);
+}
+
+.slidecontainer label {
+  font-size: 0.95rem;
+  font-weight: 600;
+  line-height: 1.4;
+  color: var(--clr-text);
+}
+
+.slider {
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  border-radius: 4px;
+  background: #e2e8f0;
+  outline: none;
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+
+.slider:hover {
+  background: #cbd5e1;
+}
+
+.slider::-webkit-slider-thumb {
+  appearance: none;
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  border: 2px solid white;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  transition: all 0.2s ease;
+  cursor: pointer;
+}
+
+.slider::-webkit-slider-thumb:hover {
+  background: var(--clr-primary-dark);
+  transform: scale(1.1);
+}
+
+.slider::-moz-range-thumb {
+  width: 20px;
+  height: 20px;
+  border-radius: 50%;
+  background: var(--clr-primary);
+  border: 2px solid white;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  cursor: pointer;
+}
+
+.input-container {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+}
+
+.input-container input[type=number] {
+  width: 100px;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid var(--clr-border);
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  background: var(--clr-surface);
+  transition: border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.input-container input[type=number]:focus {
+  outline: none;
+  border-color: var(--clr-primary);
+  box-shadow: 0 0 0 3px rgba(0, 128, 255, 0.1);
+}
+
+/* ---------- Delete button ---------- */
+.delete-button {
+  text-align: center;
+}
+
+.delete-button button {
+  background: var(--clr-danger);
+  color: #fff;
+  border: none;
+  padding: 0.75rem 1.5rem;
+  font-size: 0.95rem;
+  font-weight: 600;
+  border-radius: var(--radius);
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--clr-shadow);
+  transition: all 0.2s ease;
+}
+
+.delete-button button:hover {
+  background: var(--clr-danger-dark);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px var(--clr-shadow-lg);
+}
+
+.delete-button button:active {
+  transform: translateY(0);
+}
+
+.delete-button button:focus-visible {
+  outline: 3px solid rgba(255, 77, 79, 0.4);
+  outline-offset: 2px;
+}
+
+/* ---------- HVI Explanation ---------- */
+.hvi-explanation {
+  background: var(--clr-surface);
+  padding: 2rem;
+  border-radius: var(--radius);
+  box-shadow: 0 8px 24px var(--clr-shadow-lg);
+  border: 1px solid var(--clr-border);
+  margin-top: 1rem;
+}
+
+.hvi-explanation h3 {
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 1.5rem;
+  text-align: center;
+  color: var(--clr-text);
+}
+
+.hvi-levels {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.hvi-level-item {
+  padding: 1rem;
+  border-radius: var(--radius-sm);
+  color: white;
+  text-align: center;
+  font-weight: 600;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
+  box-shadow: 0 4px 12px var(--clr-shadow);
+  transition: transform 0.2s ease;
+}
+
+.hvi-level-item:hover {
+  transform: translateY(-2px);
+}
+
+.hvi-level-item .level-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.hvi-level-item .level-text {
+  font-size: 0.95rem;
+  opacity: 0.95;
+}
+
+.hvi-description {
+  text-align: center;
+  color: var(--clr-text-muted);
+  font-size: 1.1rem;
+  line-height: 1.7;
+  max-width: 800px;
+  margin: 0 auto;
 }
 
 /* ---------- Footer ---------- */
-footer{
-  text-align:center;
-  padding:.8rem 0;
-  font-size:.85rem;
-  color:#666;
-  width:100%;
-  box-shadow:0 -1px 4px var(--clr-shadow);
+footer {
+  text-align: center;
+  padding: 1rem 0;
+  font-size: 0.875rem;
+  color: var(--clr-text-muted);
+  width: 100%;
+  box-shadow: 0 -1px 4px var(--clr-shadow);
+  background: var(--clr-surface);
+  border-top: 1px solid var(--clr-border);
+}
+
+/* ---------- Responsive design ---------- */
+@media (max-width: 1024px) {
+  .slider-grid {
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 1.5rem;
+  }
+  
+  .control-header {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 1.5rem;
+  }
+  
+  .hvi-display {
+    grid-template-columns: 1fr;
+  }
+  
+  .lst-display {
+    grid-column: 1;
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .main-content {
+    padding: 0 1rem 1rem;
+  }
+  
+  .map-container {
+    height: 50vh;
+    min-height: 300px;
+  }
+  
+  .slider-grid {
+    grid-template-columns: 1fr;
+    gap: 1rem;
+  }
+  
+  .hvi-levels {
+    grid-template-columns: 1fr;
+  }
+  
+  .tabs {
+    flex-direction: column;
+  }
+  
+  .tab-content {
+    padding: 1.5rem;
+  }
+  
+  .instructions {
+    margin: 1rem;
+    padding: 1rem;
+  }
+}
+
+@media (max-width: 480px) {
+  header {
+    font-size: 1.25rem;
+    padding: 1rem 0;
+  }
+  
+  .map-container {
+    height: 40vh;
+    min-height: 250px;
+  }
+  
+  .control-header {
+    padding: 1rem;
+  }
+  
+  .hvi-explanation {
+    padding: 1.5rem;
+  }
 }
