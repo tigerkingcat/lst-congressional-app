@@ -131,30 +131,29 @@ function App() {
     };
 
     const environmentalSliders = [
-        { name: "Impervious Surface Area", key: "impervious", min: 0, max: 100, step: "0.01" },
+        { name: "Impervious Surface Area (%)", key: "impervious", min: 0, max: 100, step: "0.01" },
         { name: "Proportional Vegetation", key: "Pv", min: -1, max: 1, step: "0.01" },
         { name: "Water Index", key: "NDWI", min: -1, max: 1, step: "0.01" },
-        { name: "Elevation", key: "elev", min: 0, max: 10000, step: "1" },
+        { name: "Elevation (m)", key: "elev", min: 0, max: 10000, step: "1" },
         { name: "Arid (Cold) Climate", key: "climate_category_Arid_Cold", min: 0, max: 1, step: "1" },
         { name: "Arid (Hot) Climate", key: "climate_category_Arid_Hot", min: 0, max: 1, step: "1" },
         { name: "Mediterranean Climate", key: "climate_category_Mediterranean", min: 0, max: 1, step: "1" },
         { name: "Semi-Arid (Cold) Climate", key: "climate_category_Semi_Arid_Cold", min: 0, max: 1, step: "1" },
         { name: "Urban Area", key: "urban_rural_classification_U", min: 0, max: 1, step: "1" },
         { name: "Rural Area", key: "urban_rural_classification_nan", min: 0, max: 1, step: "1" },
-        { name: "Year (centered)", key: "year_centered", min: -15, max: 15, step: "0.1" }
     ];
 
     const socioeconomicSliders = [
-        { name: "Median Household Income", key: "Median_Household_Income", min: 0, max: 200000, step: "1" },
-        { name: "High School Graduates (25+)", key: "High_School_Diploma_25plus", min: 0, max: 10000, step: "1" },
-        { name: "Unemployed Persons", key: "Unemployment", min: 0, max: 5000, step: "1" },
-        { name: "Median Housing Value", key: "Median_Housing_Value", min: 0, max: 2000000, step: "1" },
-        { name: "Median Gross Rent", key: "Median_Gross_Rent", min: 0, max: 4000, step: "0.1" },
-        { name: "Renter Occupied Housing Units", key: "Renter_Occupied_Housing_Units", min: 0, max: 1000, step: "1" },
-        { name: "Total Population", key: "Total_Population", min: 0, max: 5000, step: "1" },
-        { name: "Median Age", key: "Median_Age", min: 0, max: 100, step: "0.1" },
-        { name: "Per Capita Income", key: "Per_Capita_Income", min: 0, max: 200000, step: "0.1" },
-        { name: "Families Below Poverty", key: "Families_Below_Poverty", min: 0, max: 100000, step: "1" }
+        { name: "Median Household Income ($)", key: "Median_Household_Income", min: 0, max: 200000, step: "1" },
+        { name: "High School Graduates (25+) (#)", key: "High_School_Diploma_25plus", min: 0, max: 10000, step: "1" },
+        { name: "Unemployed Persons (#)", key: "Unemployment", min: 0, max: 5000, step: "1" },
+        { name: "Median Housing Value ($)", key: "Median_Housing_Value", min: 0, max: 2000000, step: "1" },
+        { name: "Median Gross Rent ($)", key: "Median_Gross_Rent", min: 0, max: 4000, step: "0.1" },
+        { name: "Renter Occupied Housing Units (#)", key: "Renter_Occupied_Housing_Units", min: 0, max: 1000, step: "1" },
+        { name: "Total Population (#)", key: "Total_Population", min: 0, max: 5000, step: "1" },
+        { name: "Median Age (#)", key: "Median_Age", min: 0, max: 100, step: "0.1" },
+        { name: "Per Capita Income ($)", key: "Per_Capita_Income", min: 0, max: 200000, step: "0.1" },
+        { name: "Families Below Poverty (#)", key: "Families_Below_Poverty", min: 0, max: 100000, step: "1" }
     ];
 
     useEffect(() => {
@@ -273,17 +272,14 @@ function App() {
 
     return (
         <>
-            <Header />
-            
-            <div className={`message ${msg.color}`}>
-                <span>{msg.text}</span>
-            </div>
+            <Header msg={msg} />
 
             <div className="instructions">
-                <p><strong>Instructions:</strong> Click on any area of the map to start analyzing heat vulnerability data for that location.</p>
+                <p><strong>Instructions:</strong> Click on or search for any area of the map to start analyzing heat vulnerability data for that location.</p>
             </div>
 
             <div className="main-content">
+
                 <div className="map-container" onClick={() => !showSlider && setShowSlider(true)}>
                     <Map idFn={setId} ref={mapRef} />
                 </div>
@@ -296,7 +292,7 @@ function App() {
                             {id_list.includes(id) ? (
                                 <div className="hvi-display">
                                     <div className="hvi-score">
-                                        <span className="label">HVI Score:</span>
+                                        <span className="label">HVI (Heat Vulnerability Index) Score:</span>
                                         <span className="value">{parseFloat((index || 0).toFixed(3))}</span>
                                     </div>
                                     <div className="hvi-score">
@@ -304,12 +300,12 @@ function App() {
                                         <span className="value">{parseFloat((indexPred || 0).toFixed(3))}</span>
                                     </div>
                                     <div className="hvi-level" style={{ backgroundColor: getHviColor(level) }}>
-                                        <span className="label">HVI Level:</span>
+                                        <span className="label">HVI (Heat Vulnerability Index) Level:</span>
                                         <span className="value">{level}</span>
                                     </div>
                                     <div className="lst-display">
                                         <div className="lst-current">
-                                            <span className="label">Current LST:</span>
+                                            <span className="label">Current LST (Land Surface Temperature):</span>
                                             <span className="value">{parseFloat((lst || 0).toFixed(2))}°C</span>
                                         </div>
                                         <div className={`lst-predicted ${(lstPred || 0) - (lst || 0) >= 0 ? 'negative' : 'positive'}`}>
@@ -382,7 +378,6 @@ function App() {
                         )}
                     </div>
                 )}
-
                 <div className="hvi-explanation">
                     <h3>Heat Vulnerability Index (HVI) Levels</h3>
                     <div className="hvi-levels">
@@ -408,11 +403,12 @@ function App() {
                         </div>
                     </div>
                     <p className="hvi-description">
-                        The Heat Vulnerability Index combines environmental and socioeconomic factors to assess 
-                        how vulnerable different areas are to extreme heat events. Higher levels indicate greater 
+                        The Heat Vulnerability Index combines environmental and socioeconomic factors to assess
+                        how vulnerable different areas are to extreme heat events. Higher levels indicate greater
                         risk and need for heat mitigation strategies.
                     </p>
                 </div>
+
             </div>
 
             <Footer />
