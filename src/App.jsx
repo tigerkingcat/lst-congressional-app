@@ -26,7 +26,7 @@ const initialFeatures = {
     Total_Population: 2500,
     Median_Age: 50,
     Per_Capita_Income: 100000,
-    Families_Below_Poverty: 50000,
+    Families_Below_Poverty: 250,
     year_centered: 7.5,
 };
 
