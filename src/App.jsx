@@ -6,6 +6,9 @@ import Slider from "./components/Slider.jsx";
 import Map from "./components/Map.jsx";
 import Delete from "./components/Delete.jsx";
 
+// Use environment variable for API URL
+const API_URL = import.meta.env.VITE_API_URL || "http://localhost:8000";
+
 const initialFeatures = {
     impervious: 50,
     Pv: 0,
@@ -157,7 +160,7 @@ function App() {
     ];
 
     useEffect(() => {
-        fetch("http://localhost:8000/api/hello")
+        fetch(`${API_URL}/api/hello`)
             .then((res) => {
                 if (!res.ok) throw new Error();
                 setMsg({ text: "Connected", color: "good" });
@@ -166,7 +169,7 @@ function App() {
     }, []);
 
     useEffect(() => {
-        fetch("http://localhost:8000/api/predict-hvi", {
+        fetch(`${API_URL}/api/predict-hvi`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(hviData),
@@ -180,7 +183,7 @@ function App() {
     }, [hviData]);
 
     useEffect(() => {
-        fetch("http://localhost:8000/api/predict-lst", {
+        fetch(`${API_URL}/api/predict-lst`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(features),
@@ -202,7 +205,7 @@ function App() {
 
         setShowSlider(true);
 
-        fetch("http://localhost:8000/api/receive-data", {
+        fetch(`${API_URL}/api/receive-data`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify(id),
